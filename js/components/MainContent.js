@@ -8,6 +8,8 @@ export function MainContent() {
 
   let currentTab = 'friends';
   let currentConversation = null;
+  let dmsTabElement = null;
+  let dmsSplitView = null;
 
   el.innerHTML = `
     <div class="content-tabs">
@@ -30,21 +32,62 @@ export function MainContent() {
 
   function openMessagePanel(friend) {
     currentConversation = friend;
-    tabContent.innerHTML = '';
-    tabContent.appendChild(MessagePanel({
+    
+    // Find the chat panel in split view
+    const chatPanel = dmsSplitView.querySelector('.dms-chat-panel');
+    chatPanel.innerHTML = '';
+    
+    // Add the message panel without close button
+    chatPanel.appendChild(MessagePanel({
       friend,
-      onClose: () => {
-        currentConversation = null;
-        switchTab(currentTab);
-      }
+      onClose: null // No close button in split view
     }));
+
+    // Highlight active conversation in sidebar
+    if (dmsTabElement) {
+      const dmCards = dmsTabElement.querySelectorAll('.dm-card');
+      dmCards.forEach(card => {
+        const cardFriend = JSON.parse(card.dataset.friend);
+        if (cardFriend.name === friend.name) {
+          card.classList.add('active');
+        } else {
+          card.classList.remove('active');
+        }
+      });
+    }
+  }
+
+  function createDMsSplitView() {
+    const splitView = document.createElement('div');
+    splitView.className = 'dms-split-view';
+    
+    // Left sidebar with DMs list
+    const sidebar = document.createElement('div');
+    sidebar.className = 'dms-sidebar';
+    dmsTabElement = DMsTab({ onOpenConversation: openMessagePanel });
+    sidebar.appendChild(dmsTabElement);
+    
+    // Right panel for chat
+    const chatPanel = document.createElement('div');
+    chatPanel.className = 'dms-chat-panel';
+    
+    // Empty state
+    chatPanel.innerHTML = `
+      <div class="dms-empty-state">
+        <i class="fa-solid fa-comments" style="font-size: 4rem; opacity: 0.3; margin-bottom: 16px;"></i>
+        <h3>Select a conversation</h3>
+        <p>Choose from your existing conversations or start a new one</p>
+      </div>
+    `;
+    
+    splitView.appendChild(sidebar);
+    splitView.appendChild(chatPanel);
+    
+    return splitView;
   }
 
   function switchTab(tabName) {
-    if (currentConversation) {
-      currentConversation = null;
-    }
-
+    currentConversation = null;
     currentTab = tabName;
 
     // Update button states
@@ -61,8 +104,11 @@ export function MainContent() {
 
     if (tabName === 'friends') {
       tabContent.appendChild(FriendsTab());
+      dmsTabElement = null;
+      dmsSplitView = null;
     } else if (tabName === 'dms') {
-      tabContent.appendChild(DMsTab({ onOpenConversation: openMessagePanel }));
+      dmsSplitView = createDMsSplitView();
+      tabContent.appendChild(dmsSplitView);
     }
   }
 

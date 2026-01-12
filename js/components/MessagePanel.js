@@ -29,7 +29,7 @@ export function MessagePanel({ friend, onClose }) {
             <div class="panel-actions">
                 <button class="panel-btn" title="Voice Call"><i class="fa-solid fa-phone"></i></button>
                 <button class="panel-btn" title="Video Call"><i class="fa-solid fa-video"></i></button>
-                <button class="panel-btn close-panel-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+                ${onClose ? '<button class="panel-btn close-panel-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>' : ''}
             </div>
         </div>
 
@@ -70,10 +70,15 @@ export function MessagePanel({ friend, onClose }) {
     `;
 
     setTimeout(() => {
-        // Close button
-        el.querySelector('.close-panel-btn').addEventListener('click', () => {
-            if (onClose) onClose();
-        });
+        // Close button (only if provided)
+        if (onClose) {
+            const closeBtn = el.querySelector('.close-panel-btn');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => {
+                    if (onClose) onClose();
+                });
+            }
+        }
 
         // Emoji picker
         const emojiContainer = el.querySelector('.emoji-picker-container');
