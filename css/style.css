@@ -122,11 +122,18 @@ body[data-theme="light"] {
     /* Let children handle padding or gap */
     gap: var(--spacing-md);
     overflow: hidden;
-    max-width: 1400px;
-    margin: 0 auto;
+    max-width: calc(100vw - 80px);
+    /* Only left space for dock button */
+    width: calc(100vw - 80px);
+    margin: 0;
+    /* Remove auto centering */
+    margin-left: 80px;
+    /* Start after dock toggle button */
+    margin-right: 0;
+    /* Extend to extreme right */
     padding: var(--spacing-md);
-    padding-bottom: 120px;
-    /* Space for Dock */
+    padding-bottom: 20px;
+    /* Minimal space - extend to extreme bottom */
 }
 
 /* Sidebar Removed */
@@ -299,9 +306,12 @@ body[data-theme="light"] {
 /* HUD TopBar Styles */
 .top-bar {
     width: 100%;
-    max-width: 1400px;
+    max-width: 100%;
+    /* Use full width to match content-wrapper */
     height: 80px;
     padding: 16px 24px;
+    padding-right: 80px;
+    /* Space for social rail toggle button */
     position: relative;
     display: flex;
     justify-content: space-between;
@@ -312,7 +322,8 @@ body[data-theme="light"] {
 
 .notification-ticker-container {
     flex: 1;
-    max-width: 600px;
+    max-width: 1400px;
+    /* Increased to utilize the wider layout */
     overflow: hidden;
     background: rgba(255, 153, 0, 0.1);
     border: 1px solid rgba(255, 153, 0, 0.3);
@@ -2009,6 +2020,29 @@ body[data-theme="light"] {
     box-shadow: 0 6px 20px rgba(255, 153, 0, 0.4);
 }
 
+.btn-friend-requests,
+.btn-message-requests {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    color: var(--text-primary);
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.btn-friend-requests:hover,
+.btn-message-requests:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+    transform: translateY(-2px);
+}
+
 .friend-section,
 .dm-section {
     display: flex;
@@ -2231,6 +2265,13 @@ body[data-theme="light"] {
     border-color: rgba(255, 153, 0, 0.3);
 }
 
+.dm-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
 .dm-details {
     flex: 1;
     display: flex;
@@ -2364,7 +2405,8 @@ body[data-theme="light"] {
 
 .social-rail {
     position: fixed;
-    right: 24px;
+    right: 8px;
+    /* Moved to extreme right - matches collapsed state */
     top: 50%;
     transform: translateY(-50%);
     display: flex;
@@ -2378,10 +2420,12 @@ body[data-theme="light"] {
 }
 
 .social-rail.rail-collapsed {
-    right: 24px;
-    top: 24px;
-    /* Extreme top as requested */
+    right: 8px;
+    /* Extreme right when collapsed */
+    top: 40px;
+    /* Vertically centered with top bar (80px height / 2 = 40px) */
     transform: translateY(0);
+    /* No vertical transform needed, top already positions it correctly */
 }
 
 .rail-toggle-btn {
@@ -2436,7 +2480,7 @@ body[data-theme="light"] {
 
     /* Expansion Logic from Example */
     width: 72px;
-    transition: width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.3s;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     max-height: calc(100vh - 200px);
     overflow-y: auto;
     overflow-x: hidden;
@@ -2467,9 +2511,10 @@ body[data-theme="light"] {
 }
 
 .social-rail.rail-collapsed .rail-content {
-    transform: scale(0.8) translateY(-20px);
+    transform: scale(0.8);
     opacity: 0;
     pointer-events: none;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes railFloat {
@@ -2490,10 +2535,10 @@ body[data-theme="light"] {
     display: flex;
     align-items: center;
     /* remove gap to prevent centering offset when name is hidden */
-    gap: 0; 
+    gap: 0;
     cursor: pointer;
     padding: 0 2px;
-    transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition: all 0.3s ease;
     /* Remove fixed dimensions to allow flex flow */
     width: 100%;
     height: auto;
@@ -2501,14 +2546,16 @@ body[data-theme="light"] {
     border: none;
     box-shadow: none;
     border-radius: 0;
-    justify-content: center; /* Center avatar when collapsed */
+    justify-content: center;
+    /* Center avatar when collapsed */
 }
 
 .friend-item:hover {
     transform: translateX(5px);
     background: transparent;
     box-shadow: none;
-    justify-content: flex-start; /* Align start when expanding */
+    justify-content: flex-start;
+    /* Align start when expanding */
 }
 
 /* Avatar Wrapper to match example sizing */
@@ -2519,7 +2566,7 @@ body[data-theme="light"] {
     position: relative;
     flex-shrink: 0;
     border: 2px solid rgba(255, 255, 255, 0.05);
-    transition: border-color 0.2s;
+    transition: border-color 0.3s ease;
     overflow: hidden;
 }
 
@@ -2535,14 +2582,16 @@ body[data-theme="light"] {
 }
 
 .friend-name {
-    display: block; 
+    display: block;
     white-space: nowrap;
     opacity: 0;
-    width: 0; /* Star with 0 width */
-    margin-left: 0; /* Start with 0 margin */
+    width: 0;
+    /* Star with 0 width */
+    margin-left: 0;
+    /* Start with 0 margin */
     overflow: hidden;
     transform: translateX(-10px);
-    transition: all 0.3s ease 0.1s;
+    transition: all 0.4s ease 0.15s;
     font-weight: 500;
     font-size: 0.95rem;
     color: var(--text-primary);
@@ -2551,7 +2600,8 @@ body[data-theme="light"] {
 .rail-content:hover .friend-name {
     opacity: 1;
     width: auto;
-    margin-left: 16px; /* Restore gap via margin */
+    margin-left: 16px;
+    /* Restore gap via margin */
     transform: translateX(0);
 }
 
